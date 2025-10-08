@@ -9,6 +9,9 @@ jobs:
       - run: python main.py
 
 workflows:
-  build_now:
-    jobs: 
-     - build 
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build  
