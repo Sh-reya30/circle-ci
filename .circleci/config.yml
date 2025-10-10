@@ -6,7 +6,17 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
-      - run: python main.py
+      - run:
+          name: Run build script and save output
+          command: |
+            python main.py > build_output.txt
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:uXsBA5WtzcAnzt/b1eKYDE/6U/cWZj2L1L8P7Qi+Im0"
+      - run:
+          name: Upload build output to EC2
+          command: |
+            scp -o StrictHostKeyChecking=no build_output.txt ubuntu@13.232.226.96:/var/www/html/build_output/
 
   test:
     docker:
@@ -29,9 +39,9 @@ workflows:
           requires:
             - build
       - deploy:
-          requires: 
+          requires:
             - test
           filters:
             branches:
-              only: main        
-                
+              only: main
+        
